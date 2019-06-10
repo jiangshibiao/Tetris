@@ -1,0 +1,162 @@
+////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+////////////////////////////////////////////////////////////////////////////////
+//   ____  ____ 
+//  /   /\/   / 
+// /___/  \  /    Vendor: Xilinx 
+// \   \   \/     Version : 14.7
+//  \   \         Application : sch2hdl
+//  /   /         Filename : disnum.vf
+// /___/   /\     Timestamp : 11/01/2018 21:32:35
+// \   \  /  \ 
+//  \___\/\___\ 
+//
+//Command: sch2hdl -intstyle ise -family kintex7 -verilog D:/3170104648/sy72/disnum.vf -w D:/3170104648/sy72/disnum.sch
+//Design Name: disnum
+//Device: kintex7
+//Purpose:
+//    This verilog netlist is translated from an ECS schematic.It can be 
+//    synthesized and simulated, but it should not be modified. 
+//
+`timescale  100 ps / 10 ps
+
+module M4_1E_HXILINX_disnum (O, D0, D1, D2, D3, E, S0, S1);
+    
+
+   output O;
+
+   input  D0;
+   input  D1;
+   input  D2;
+   input  D3;
+   input  E;
+   input  S0;
+   input  S1;
+
+   reg O;
+
+   always @ ( D0 or D1 or D2 or D3 or E or S0 or S1)
+   begin
+      if(!E)
+      O <= 1'b0;
+      else 
+      begin
+        case({S1,S0})
+        2'b00 : O <= D0;
+        2'b01 : O <= D1;
+        2'b10 : O <= D2;
+        2'b11 : O <= D3;
+        endcase
+      end
+   end
+    
+endmodule
+`timescale 1ns / 1ps
+
+module DislaySync_MUSER_disnum(Hexs, 
+                               LED, 
+                               point, 
+                               Scan, 
+                               AN, 
+                               HEX, 
+                               LE, 
+                               p);
+
+    input [15:0] Hexs;
+    input [3:0] LED;
+    input [3:0] point;
+    input [1:0] Scan;
+   output [3:0] AN;
+   output [3:0] HEX;
+   output LE;
+   output p;
+   
+   wire v0;
+   wire v1;
+   wire XLXN_57;
+   wire XLXN_59;
+   
+   sy7  XLXI_1 (.I0(Hexs[3:0]), 
+               .I1(Hexs[7:4]), 
+               .I2(Hexs[11:8]), 
+               .I3(Hexs[15:12]), 
+               .s(Scan[1:0]), 
+               .o(HEX[3:0]));
+   (* HU_SET = "XLXI_10_0" *) 
+   M4_1E_HXILINX_disnum  XLXI_10 (.D0(point[0]), 
+                                 .D1(point[1]), 
+                                 .D2(point[2]), 
+                                 .D3(point[3]), 
+                                 .E(XLXN_57), 
+                                 .S0(Scan[0]), 
+                                 .S1(Scan[1]), 
+                                 .O(p));
+   (* HU_SET = "XLXI_11_1" *) 
+   M4_1E_HXILINX_disnum  XLXI_11 (.D0(LED[0]), 
+                                 .D1(LED[1]), 
+                                 .D2(LED[2]), 
+                                 .D3(LED[3]), 
+                                 .E(XLXN_59), 
+                                 .S0(Scan[0]), 
+                                 .S1(Scan[1]), 
+                                 .O(LE));
+   sy7  XLXI_12 (.I0({v1, v1, v1, v0}), 
+                .I1({v1, v1, v0, v1}), 
+                .I2({v1, v0, v1, v1}), 
+                .I3({v0, v1, v1, v1}), 
+                .s(Scan[1:0]), 
+                .o(AN[3:0]));
+   GND  XLXI_13 (.G(v0));
+   VCC  XLXI_14 (.P(v1));
+   VCC  XLXI_17 (.P(XLXN_57));
+   VCC  XLXI_18 (.P(XLXN_59));
+endmodule
+`timescale 1ns / 1ps
+
+module disnum(clk, 
+              Hexs, 
+              LES, 
+              point, 
+              RST, 
+              AN, 
+              Segment);
+
+    input clk;
+    input [15:0] Hexs;
+    input [3:0] LES;
+    input [3:0] point;
+    input RST;
+   output [3:0] AN;
+   output [7:0] Segment;
+   
+   wire [31:0] clkd;
+   wire [3:0] HEX;
+   wire XLXN_14;
+   wire XLXN_18;
+   
+   clkdiv  XLXI_2 (.clk(clk), 
+                  .rst(RST), 
+                  .clkdiv(clkd[31:0]));
+   MyMC14495  XLXI_3 (.D0(HEX[0]), 
+                     .D1(HEX[1]), 
+                     .D2(HEX[2]), 
+                     .D3(HEX[3]), 
+                     .LE(XLXN_18), 
+                     .point(XLXN_14), 
+                     .a(Segment[0]), 
+                     .b(Segment[1]), 
+                     .c(Segment[2]), 
+                     .d(Segment[3]), 
+                     .e(Segment[4]), 
+                     .f(Segment[5]), 
+                     .g(Segment[6]), 
+                     .p(Segment[7]));
+   DislaySync_MUSER_disnum  XLXI_5 (.Hexs(Hexs[15:0]), 
+                                   .LED(LES[3:0]), 
+                                   .point(point[3:0]), 
+                                   .Scan(clkd[18:17]), 
+                                   .AN(AN[3:0]), 
+                                   .HEX(HEX[3:0]), 
+                                   .LE(XLXN_18), 
+                                   .p(XLXN_14));
+endmodule
